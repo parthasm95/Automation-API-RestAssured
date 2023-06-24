@@ -3,7 +3,7 @@ package com.automazing.restclient;
 import java.io.File;
 import java.util.Map;
 
-import com.automazing.util.TestUtil;
+import com.automazing.util.JsonUtil;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,7 +14,7 @@ import io.restassured.specification.RequestSpecification;
  * This Class contains all HTTP methods which can call APIs and different
  * generic methods to get response and fetch values from response
  * 
- * @author Partha Mohapatra
+ * @author Partha
  *
  */
 
@@ -50,7 +50,7 @@ public class RestClient {
 	}
 
 	public static void addRequestPayload(RequestSpecification request, Object payLoadObj) {
-			String jsonPayload = TestUtil.getSerializedJSON(payLoadObj);
+			String jsonPayload = JsonUtil.getSerializedJSON(payLoadObj);
 			request.body(jsonPayload);
 	}
 

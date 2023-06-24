@@ -3,7 +3,7 @@ package com.automazing.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class TestUtil {
+public class JsonUtil {
 	
 	/**
 	 * This method is used to covert a Object to JSON String
