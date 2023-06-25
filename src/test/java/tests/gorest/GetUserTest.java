@@ -1,19 +1,36 @@
-package tests;
+package tests.gorest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.automazing.restclient.RestClient;
+import com.automazing.util.PropertiesUtil;
 
 import io.restassured.response.Response;
 
 public class GetUserTest {
 	
-	String baseURI = "https://gorest.co.in";
-	String basePath = "/public/v2/users";
-	String token = "aba93e15695fdbb802f1598d4fdc67384453802dd2b264700d0bfb2443184a71";
+	private Properties prop;
+	private PropertiesUtil propertiesUtil;
+	
+	private String baseURI;
+	private String basePath;
+	private String token;
+	
+	@BeforeMethod
+	public void setup() {
+		System.out.println("loading properties...");
+		propertiesUtil = new PropertiesUtil();
+		String propFilePath = "src\\test\\resources\\properties\\gorest.properties";
+		prop = propertiesUtil.loadProp(propFilePath);
+		baseURI = prop.getProperty("baseURI");
+		basePath = prop.getProperty("basePath");
+		token = prop.getProperty("token");
+	}
 	
 	@Test(priority = 1)
 	public void getAllUserListAPITest() {
@@ -32,5 +49,5 @@ public class GetUserTest {
 		System.out.println(response.statusCode());
 		System.out.println(response.prettyPrint());
 	}
-
+	
 }

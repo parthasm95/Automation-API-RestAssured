@@ -1,4 +1,4 @@
-package tests;
+package tests.gorest;
 
 public class DeleteUserTest {
 
