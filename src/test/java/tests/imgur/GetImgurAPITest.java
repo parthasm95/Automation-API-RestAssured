@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.automazing.restclient.RestClient;
+import com.automazing.util.HeaderUtil;
 import com.automazing.util.PropertiesUtil;
 import com.automazing.util.TokenUtil;
 
@@ -17,15 +18,14 @@ public class GetImgurAPITest {
 	
 	private Properties prop;
 	private PropertiesUtil propertiesUtil;
-	
-	private Map<Object, Object> tokenMap;
+	private String token;
 	private String authUrl;
-	
 	private String accessToken;
-	
 	private String baseURI;
 	private String accountStatusCheckPath;
 	private String accountUserName;
+	
+	private Map<String, String> headers;
 	
 	@BeforeMethod
 	public void setup() {
@@ -33,16 +33,18 @@ public class GetImgurAPITest {
 		propertiesUtil = new PropertiesUtil();
 		String propFilePath = "src\\test\\resources\\properties\\imgur.properties";
 		prop = propertiesUtil.loadProp(propFilePath);
-		authUrl = prop.getProperty("authUrl");
 		
+		//Construct Map for form parameters to get OAuth Token
 		Map<String, String> paramsMap = new HashMap<String, String>();
 		paramsMap.put("refresh_token", prop.getProperty("refresh_token"));
 		paramsMap.put("client_id", prop.getProperty("client_id"));
 		paramsMap.put("client_secret", prop.getProperty("client_secret"));
 		paramsMap.put("grant_type", prop.getProperty("grant_type"));
 		
-		tokenMap = TokenUtil.generateOAuthToken(authUrl, paramsMap, null);
-		accessToken = tokenMap.get("access_token").toString();
+		//generate OAuth Token
+		authUrl = prop.getProperty("authUrl");
+		token = TokenUtil.generateOAuthToken(authUrl, paramsMap, null, "access_token");
+		accessToken = "Bearer "+ token;
 		System.out.println("Generated Access Token is : "+accessToken);
 		
 		baseURI = prop.getProperty("baseURI");
@@ -52,9 +54,12 @@ public class GetImgurAPITest {
 	
 	@Test
 	public void getAccountBlockStatusTest() {
-		Response response = RestClient.doGet(null, baseURI, accountStatusCheckPath +accountUserName + "/block", accessToken, null, true);
+		String headerFilePath = "src\\test\\resources\\headers\\imgur_headers.properties";
+		headers = HeaderUtil.buildHeaders(headerFilePath);
+		headers.put("Authorization", accessToken);
+		
+		Response response = RestClient.doGet(baseURI, accountStatusCheckPath +accountUserName + "/block", headers, null, true);
 		System.out.println(response.statusCode());
 		System.out.println(response.prettyPrint());
 	}
-	
 }

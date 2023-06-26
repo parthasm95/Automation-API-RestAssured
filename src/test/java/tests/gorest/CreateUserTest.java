@@ -1,5 +1,6 @@
 package tests.gorest;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.testng.annotations.BeforeMethod;
@@ -9,6 +10,7 @@ import org.testng.annotations.Test;
 import com.automazing.pojo.User;
 import com.automazing.restclient.RestClient;
 import com.automazing.util.ExcelUtil;
+import com.automazing.util.HeaderUtil;
 import com.automazing.util.PropertiesUtil;
 import com.automazing.util.RandomUtil;
 
@@ -21,7 +23,8 @@ public class CreateUserTest {
 	
 	private String baseURI;
 	private String basePath;
-	private String token;
+	
+	private Map<String,String> headers;
 	
 	@BeforeMethod
 	public void setup() {
@@ -31,7 +34,9 @@ public class CreateUserTest {
 		prop = propertiesUtil.loadProp(propFilePath);
 		baseURI = prop.getProperty("baseURI");
 		basePath = prop.getProperty("basePath");
-		token = prop.getProperty("token");
+		
+		String headerFilePath = "src\\test\\resources\\headers\\gorest_headers.properties";
+		headers = HeaderUtil.buildHeaders(headerFilePath);
 	}
 	
 	@DataProvider
@@ -44,7 +49,7 @@ public class CreateUserTest {
 	@Test
 	public void createUserPostTest() {
 		User user = new User("Ivaan", "ivaan"+RandomUtil.gerenateInt()+"@gmail.com", "male", "active");
-		Response response  = RestClient.doPost("JSON", baseURI, basePath, token, null, true, user);
+		Response response  = RestClient.doPost(baseURI, basePath, headers, null, true, user);
 		System.out.println(response.statusCode());
 		System.out.println(response.prettyPrint());
 	}
@@ -53,7 +58,7 @@ public class CreateUserTest {
 	public void createUserPostTestByExcel(String name, String gender, String status) {
 		String randomEmail = name+RandomUtil.gerenateInt()+"@gmail.com";
 		User user = new User(name, randomEmail, gender, status);
-		Response response  = RestClient.doPost("JSON", baseURI, basePath, token, null, true, user);
+		Response response  = RestClient.doPost(baseURI, basePath, headers, null, true, user);
 		System.out.println(response.statusCode());
 		System.out.println(response.prettyPrint());
 	}

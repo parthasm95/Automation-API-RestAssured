@@ -9,7 +9,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class TokenUtil {
 	
-	public static Map<Object, Object> generateOAuthToken(String authUrl,Map<String, String> paramsMap, Map<String, String> headersMap) {
+	public static String generateOAuthToken(String authUrl,Map<String, String> paramsMap, Map<String, String> headersMap, String responseTokenKeyName) {
 		RequestSpecification request;
 		Response response = null;
 		request = RestAssured.given();
@@ -34,7 +34,7 @@ public class TokenUtil {
 		response = request.post(authUrl);
 		String responseBody = response.getBody().asString();
 		JsonPath jsonPath = new JsonPath(responseBody);
-		 
-		return jsonPath.getMap("");
+
+		return jsonPath.get(responseTokenKeyName).toString();
 	}
 }

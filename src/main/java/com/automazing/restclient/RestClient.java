@@ -3,6 +3,8 @@ package com.automazing.restclient;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.poi.util.SystemOutLogger;
+
 import com.automazing.util.JsonUtil;
 
 import io.restassured.RestAssured;
@@ -19,22 +21,29 @@ import io.restassured.specification.RequestSpecification;
  */
 
 public class RestClient {
+	private static String uploadFilePath;
 
-	public static Response doGet(String contentType, String baseURI, String basePath, String token,
-			Map<String, String> paramsMap, boolean log) {
-
+	public static Response doGet(String baseURI, String basePath, Map<String, String> headers,
+			Map<String, String> queryParamsMap, boolean log) {
+		
+		
 		if (setBaseURI(baseURI)) {
-			RequestSpecification request = createRequest(contentType, token, paramsMap, log);
+			RequestSpecification request = createRequest(headers, queryParamsMap, log);
 			return getResponse("GET", request, basePath);
 		}
 		return null;
 	}
 
-	public static Response doPost(String contentType, String baseURI, String basePath, String token,
-			Map<String, String> paramsMap, boolean log, Object payLoadObj) {
+	public static Response doPost(String baseURI, String basePath, Map<String, String> headers,
+			Map<String, String> queryParamsMap, boolean log, Object payLoadObj) {
+		
+		if(payLoadObj instanceof Map) {
+			Map<String, String> formMap = (Map<String, String>)payLoadObj;
+			uploadFilePath = formMap.get("filePath");
+		}
 
 		if (setBaseURI(baseURI)) {
-			RequestSpecification request = createRequest(contentType, token, paramsMap, log);
+			RequestSpecification request = createRequest(headers, queryParamsMap, log);
 			addRequestPayload(request, payLoadObj);
 			return getResponse("POST", request, basePath);
 		}
@@ -50,8 +59,15 @@ public class RestClient {
 	}
 
 	public static void addRequestPayload(RequestSpecification request, Object payLoadObj) {
+		
+		if(payLoadObj instanceof Map) {
+			Map<String, String> formMap = (Map<String, String>)payLoadObj;
+			formMap.remove("filePath");
+			request.formParams(formMap);
+		}else {
 			String jsonPayload = JsonUtil.getSerializedJSON(payLoadObj);
 			request.body(jsonPayload);
+		}
 	}
 
 	private static boolean setBaseURI(String baseURI) {
@@ -69,7 +85,7 @@ public class RestClient {
 		}
 	}
 
-	private static RequestSpecification createRequest(String contentType, String token, Map<String, String> paramsMap,
+	private static RequestSpecification createRequest(Map<String, String> headers, Map<String, String> queryParamsMap,
 			boolean log) {
 		RequestSpecification request;
 		if (log) {
@@ -77,11 +93,17 @@ public class RestClient {
 		} else {
 			request = RestAssured.given();
 		}
+		
+		String contentType = headers.get("Content-Type");
+		
+		headers.remove("Content-Type");
+		if(!(headers == null)) {
+			request.headers(headers);
+		}
+		
 
-		request.header("Authorization", "Bearer " + token);
-
-		if (!(paramsMap == null)) {
-			request.queryParams(paramsMap);
+		if (!(queryParamsMap == null)) {
+			request.queryParams(queryParamsMap);
 		}
 
 		if (contentType != null) {
@@ -92,7 +114,7 @@ public class RestClient {
 			} else if (contentType.equalsIgnoreCase("TEXT")) {
 				request.contentType(ContentType.TEXT);
 			} else if (contentType.equalsIgnoreCase("multipart")) {
-				request.multiPart("image", new File(""));
+				request.multiPart("image", new File(uploadFilePath));
 			}
 		}
 

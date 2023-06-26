@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.automazing.restclient.RestClient;
+import com.automazing.util.HeaderUtil;
 import com.automazing.util.PropertiesUtil;
 
 import io.restassured.response.Response;
@@ -19,7 +20,8 @@ public class GetUserTest {
 	
 	private String baseURI;
 	private String basePath;
-	private String token;
+	
+	private Map<String,String> headers;
 	
 	@BeforeMethod
 	public void setup() {
@@ -29,12 +31,14 @@ public class GetUserTest {
 		prop = propertiesUtil.loadProp(propFilePath);
 		baseURI = prop.getProperty("baseURI");
 		basePath = prop.getProperty("basePath");
-		token = prop.getProperty("token");
+		
+		String headerFilePath = "src\\test\\resources\\headers\\gorest_headers.properties";
+		headers = HeaderUtil.buildHeaders(headerFilePath);
 	}
 	
 	@Test(priority = 1)
 	public void getAllUserListAPITest() {
-		Response response = RestClient.doGet("JSON", baseURI, basePath, token, null, true);
+		Response response = RestClient.doGet(baseURI, basePath, headers, null, true);
 		System.out.println(response.statusCode());
 		System.out.println(response.prettyPrint());
 	}
@@ -43,11 +47,10 @@ public class GetUserTest {
 	@Test(priority = 2)
 	public void getSpecificUserAPITest() {
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("name", "Mohan Jha");
+		params.put("name", "Heema Bandopadhyay");
 		params.put("gender", "male");
-		Response response = RestClient.doGet("JSON", baseURI, basePath, token, params, true);
+		Response response = RestClient.doGet(baseURI, basePath, headers, params, true);
 		System.out.println(response.statusCode());
 		System.out.println(response.prettyPrint());
 	}
-	
 }
