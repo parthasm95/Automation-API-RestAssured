@@ -32,8 +32,9 @@ public class TokenUtil {
 		}
 		
 		response = request.post(authUrl);
-		String responseBody = response.getBody().asString();
-		JsonPath jsonPath = new JsonPath(responseBody);
+		//String responseBody = response.getBody().asString();
+		//JsonPath jsonPath = new JsonPath(responseBody);
+		JsonPath jsonPath = response.jsonPath();
 
 		return jsonPath.get(responseTokenKeyName).toString();
 	}
