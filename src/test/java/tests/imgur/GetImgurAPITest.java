@@ -31,7 +31,7 @@ public class GetImgurAPITest {
 	public void setup() {
 		System.out.println("loading properties...");
 		propertiesUtil = new PropertiesUtil();
-		String propFilePath = "src\\test\\resources\\properties\\imgur.properties";
+		String propFilePath = "src/test/resources/properties/imgur.properties";
 		prop = propertiesUtil.loadProp(propFilePath);
 		
 		//Construct Map for form parameters to get OAuth Token
@@ -54,7 +54,7 @@ public class GetImgurAPITest {
 	
 	@Test
 	public void getAccountBlockStatusTest() {
-		String headerFilePath = "src\\test\\resources\\headers\\imgur_headers.properties";
+		String headerFilePath = "src/test/resources/headers/imgur_headers.properties";
 		headers = HeaderUtil.buildHeaders(headerFilePath);
 		headers.put("Authorization", accessToken);
 		

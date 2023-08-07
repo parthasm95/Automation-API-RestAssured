@@ -25,7 +25,7 @@ public class PostImgurAPITest {
 	public void setup() {
 		System.out.println("loading properties...");
 		propertiesUtil = new PropertiesUtil();
-		String propFilePath = "src\\test\\resources\\properties\\imgur.properties";
+		String propFilePath = "src/test/resources/properties/imgur.properties";
 		prop = propertiesUtil.loadProp(propFilePath);
 		
 		baseURI = prop.getProperty("baseURI");
@@ -35,13 +35,13 @@ public class PostImgurAPITest {
 	
 	@Test
 	public void uploadImageTest() {
-		String headerFilePath = "src\\test\\resources\\headers\\imgur_media_upload_headers.properties";
+		String headerFilePath = "src/test/resources/headers/imgur_media_upload_headers.properties";
 		headers = HeaderUtil.buildHeaders(headerFilePath);
 		
 		Map<String, String> formMap = new HashMap<String, String>();
 		formMap.put("title", "my image");
 		formMap.put("description", "This is test image");
-		formMap.put("filePath", ".\\src\\test\\resources\\testdata\\test_image.png");
+		formMap.put("filePath", "./src/test/resources/testdata/test_image.png");
 		
 		Response response = RestClient.doPost(baseURI, imageUploadPath, headers, null, true, formMap);
 		System.out.println(response.statusCode());
