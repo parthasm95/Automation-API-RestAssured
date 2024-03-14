@@ -8,6 +8,7 @@ import org.apache.poi.util.SystemOutLogger;
 import com.automazing.util.JsonUtil;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -148,5 +149,75 @@ public class RestClient {
 
 		return response;
 	}
+	/////////////////////
+	//Code Refactoring//
+	///////////////////
+	
+	private static RequestSpecBuilder specBuilder;
+	
+	static {
+		specBuilder = new RequestSpecBuilder();
+	}
+	
+	public void addAuthorizationHeader() {
+		specBuilder.addHeader("Authorization", "Bearer ");
+	}
+	
+	private void setRequestContentType(String contentType) {
+		switch (contentType.toLowerCase()) {
+		case "json":
+			specBuilder.setContentType(ContentType.JSON);
+			break;
+		case "xml":
+			specBuilder.setContentType(ContentType.XML);
+			break;
+		case "text":
+			specBuilder.setContentType(ContentType.TEXT);
+			break;
+		case "multipart":
+			specBuilder.setContentType(ContentType.MULTIPART);
+			break;
+
+		default:
+			System.out.println("Please provide correct content Type");
+			break;
+		}
+	}
+	
+	public RequestSpecification createRequestSpec() {
+		specBuilder.setBaseUri("");
+		addAuthorizationHeader();
+		return specBuilder.build();
+	}
+	
+	public RequestSpecification createRequestSpec(Map<String, String> headersMap) {
+		specBuilder.setBaseUri("");
+		addAuthorizationHeader();
+		if(headersMap != null) {
+			specBuilder.addHeaders(headersMap);
+		}
+		return specBuilder.build();
+	}
+	
+	public RequestSpecification createRequestSpec(Map<String, String> headersMap, Map<String, String> queryParams) {
+		specBuilder.setBaseUri("");
+		addAuthorizationHeader();
+		if(headersMap != null) {
+			specBuilder.addHeaders(headersMap);
+		}
+		if(queryParams != null) {
+			specBuilder.addQueryParams(queryParams);
+		}
+		return specBuilder.build();
+	}
+	
+	public RequestSpecification createRequestSpec(Object payload, String contentType) {
+		specBuilder.setBaseUri("");
+		addAuthorizationHeader();
+		
+		return specBuilder.build();
+	}
+	
+	
 
 }
