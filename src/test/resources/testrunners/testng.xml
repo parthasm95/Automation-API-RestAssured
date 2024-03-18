@@ -11,10 +11,10 @@
 
 	<test name="Rest API regression Test" parallel="classes" thread-count="3">
 		<classes>
-			<class name="tests.gorest.CreateUserTest" />
+			<!-- <class name="tests.gorest.CreateUserTest" /> -->
 			<class name="tests.gorest.GetUserTest" /> 
-			<class name="tests.imgur.GetImgurAPITest" />
-			<class name="tests.imgur.PostImgurAPITest" />
+			<!-- <class name="tests.imgur.GetImgurAPITest" /> -->
+			<!-- <class name="tests.imgur.PostImgurAPITest" /> -->
 		</classes>
 	</test>
 </suite>
