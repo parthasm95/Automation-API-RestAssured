@@ -177,46 +177,46 @@ public class RestClient {
 
 	public Response post(String serviceUrl, String contentType,Object payload, Boolean log) {
 		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType)).log().all().when().get(serviceUrl);
+			return RestAssured.given(createRequestSpec(payload, contentType)).log().all().when().post(serviceUrl);
 		}
-		return RestAssured.given(createRequestSpec(payload, contentType)).when().get(serviceUrl);
+		return RestAssured.given(createRequestSpec(payload, contentType)).when().post(serviceUrl);
 	}
 
 	public Response post(String serviceUrl, String contentType,Object payload, Map<String, String> headersMap, boolean log) {
 		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().get(serviceUrl);
+			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().post(serviceUrl);
 		}
-		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().get(serviceUrl);
+		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().post(serviceUrl);
 
 	}
 
 	public Response put(String serviceUrl, String contentType,Object payload, Boolean log) {
 		if (log) {
-			return RestAssured.given(createRequestSpec()).log().all().when().get(serviceUrl);
+			return RestAssured.given(createRequestSpec()).log().all().when().put(serviceUrl);
 		}
-		return RestAssured.given(createRequestSpec()).when().get(serviceUrl);
+		return RestAssured.given(createRequestSpec()).when().put(serviceUrl);
 	}
 
 	public Response put(String serviceUrl, String contentType,Object payload, Map<String, String> headersMap, boolean log) {
 		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().get(serviceUrl);
+			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().put(serviceUrl);
 		}
-		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().get(serviceUrl);
+		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().put(serviceUrl);
 
 	}
 
 	public Response patch(String serviceUrl, String contentType,Object payload, Boolean log) {
 		if (log) {
-			return RestAssured.given(createRequestSpec()).log().all().when().get(serviceUrl);
+			return RestAssured.given(createRequestSpec()).log().all().when().patch(serviceUrl);
 		}
-		return RestAssured.given(createRequestSpec()).when().get(serviceUrl);
+		return RestAssured.given(createRequestSpec()).when().patch(serviceUrl);
 	}
 
 	public Response patch(String serviceUrl, String contentType,Object payload, Map<String, String> headersMap, boolean log) {
 		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().get(serviceUrl);
+			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().patch(serviceUrl);
 		}
-		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().get(serviceUrl);
+		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().patch(serviceUrl);
 
 	}
 
