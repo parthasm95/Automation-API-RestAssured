@@ -1,45 +1,41 @@
 package com.automazing.pojo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 	
-	//Class Variables
-	private String name;
-	private String email;
-	private String gender;
-	private String status;
+	@JsonProperty("id")
+	private Integer id;
 	
-	//Constuctor
+	@JsonProperty("name")
+	private String name;
+	
+	@JsonProperty("email")
+	private String email;
+	
+	@JsonProperty("gender")
+	private String gender;
+	
+	@JsonProperty("status")
+	private String status;
+
 	public User(String name, String email, String gender, String status) {
 		this.name = name;
 		this.email = email;
 		this.gender = gender;
 		this.status = status;
 	}
-	
-	//Getter and Setter
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public String getGender() {
-		return gender;
-	}
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
 }

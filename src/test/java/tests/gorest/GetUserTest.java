@@ -2,55 +2,48 @@ package tests.gorest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.automazing.restclient.RestClient;
-import com.automazing.util.HeaderUtil;
-import com.automazing.util.PropertiesUtil;
+import com.automazing.constants.Constants;
+import com.automazing.constants.HttpStatus;
 
 import io.restassured.response.Response;
+import tests.base.BaseTest;
 
-public class GetUserTest {
-	
-	private Properties prop;
-	private PropertiesUtil propertiesUtil;
-	
-	private String baseURI;
-	private String basePath;
-	
-	private Map<String,String> headers;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
+
+public class GetUserTest extends BaseTest{
 	
 	@BeforeMethod
-	public void setup() {
-		System.out.println("loading properties...");
-		propertiesUtil = new PropertiesUtil();
-		String propFilePath = "src/test/resources/properties/gorest.properties";
-		prop = propertiesUtil.loadProp(propFilePath);
-		baseURI = prop.getProperty("baseURI");
-		basePath = prop.getProperty("basePath");
-		
-		String headerFilePath = "src/test/resources/headers/gorest_headers.properties";
-		headers = HeaderUtil.buildHeaders(headerFilePath);
+	public void setUpProperties() {
+		setUp("gorest");
 	}
+	
 	
 	@Test(priority = 1)
 	public void getAllUserListAPITest() {
-		Response response = RestClient.doGet(baseURI, basePath, headers, null, true);
-		System.out.println(response.statusCode());
-		System.out.println(response.prettyPrint());
+		Response response = restClient.get(Constants.GOREST_ENDPOINT, true);
+		response.then().log().all()
+			.assertThat()
+				.statusCode(HttpStatus.OK_200.getCode())
+			.and()
+				.body(matchesJsonSchemaInClasspath("schemas/gorest/getuser_schema.json"));
 	}
-	
 	
 	@Test(priority = 2)
 	public void getSpecificUserAPITest() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("name", "Heema Bandopadhyay");
+		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("gender", "male");
-		Response response = RestClient.doGet(baseURI, basePath, headers, params, true);
-		System.out.println(response.statusCode());
-		System.out.println(response.prettyPrint());
+		params.put("status", "active");
+		Response response = restClient.get(Constants.GOREST_ENDPOINT, null, params, true);
+		response.then().log().all()
+			.assertThat()
+				.statusCode(HttpStatus.OK_200.getCode())
+			.and()
+				.body(matchesJsonSchemaInClasspath("schemas/gorest/getuser_schema.json"));
 	}
+	
 }

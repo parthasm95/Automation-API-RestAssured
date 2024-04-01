@@ -1,43 +1,28 @@
 package tests.gorest;
 
-import java.util.Map;
-import java.util.Properties;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.automazing.constants.Constants;
+import com.automazing.constants.HttpStatus;
 import com.automazing.pojo.User;
-import com.automazing.restclient.RestClient;
 import com.automazing.util.ExcelUtil;
-import com.automazing.util.HeaderUtil;
-import com.automazing.util.PropertiesUtil;
 import com.automazing.util.RandomUtil;
 
 import io.restassured.response.Response;
+import tests.base.BaseTest;
 
-public class CreateUserTest {
-	
-	private Properties prop;
-	private PropertiesUtil propertiesUtil;
-	
-	private String baseURI;
-	private String basePath;
-	
-	private Map<String,String> headers;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
+public class CreateUserTest extends BaseTest{
+
 	
 	@BeforeMethod
-	public void setup() {
-		System.out.println("loading properties...");
-		propertiesUtil = new PropertiesUtil();
-		String propFilePath = "src/test/resources/properties/gorest.properties";
-		prop = propertiesUtil.loadProp(propFilePath);
-		baseURI = prop.getProperty("baseURI");
-		basePath = prop.getProperty("basePath");
-		
-		String headerFilePath = "src/test/resources/headers/gorest_headers.properties";
-		headers = HeaderUtil.buildHeaders(headerFilePath);
+	public void setUpProperties() {
+		setUp("gorest");
 	}
+	
 	
 	@DataProvider
 	public Object[][] getUserData(){
@@ -49,18 +34,24 @@ public class CreateUserTest {
 	@Test
 	public void createUserPostTest() {
 		User user = new User("Ivaan", "ivaan"+RandomUtil.gerenateInt()+"@gmail.com", "male", "active");
-		Response response  = RestClient.doPost(baseURI, basePath, headers, null, true, user);
-		System.out.println(response.statusCode());
-		System.out.println(response.prettyPrint());
+		Response response = restClient.post(Constants.GOREST_ENDPOINT, "json", user, true);
+		response.then().log().all()
+		.assertThat()
+			.statusCode(HttpStatus.CREATED_201.getCode())
+		.and()
+			.body(matchesJsonSchemaInClasspath("schemas/gorest/createuser_schema.json"));
 	}
 	
 	@Test (dataProvider = "getUserData")
 	public void createUserPostTestByExcel(String name, String gender, String status) {
 		String randomEmail = name+RandomUtil.gerenateInt()+"@gmail.com";
 		User user = new User(name, randomEmail, gender, status);
-		Response response  = RestClient.doPost(baseURI, basePath, headers, null, true, user);
-		System.out.println(response.statusCode());
-		System.out.println(response.prettyPrint());
+		Response response  = restClient.post(Constants.GOREST_ENDPOINT, "json", user, true);
+		response.then().log().all()
+		.assertThat()
+			.statusCode(HttpStatus.CREATED_201.getCode())
+		.and()
+			.body(matchesJsonSchemaInClasspath("schemas/gorest/createuser_schema.json"));
 	}
 	
 }
