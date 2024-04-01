@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.poi.util.SystemOutLogger;
+import org.checkerframework.checker.units.qual.s;
 
 import com.automazing.util.JsonUtil;
 import com.aventstack.extentreports.gherkin.model.Given;
+import com.aventstack.extentreports.gherkin.model.When;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -25,84 +27,106 @@ import io.restassured.specification.RequestSpecification;
 
 public class RestClient {
 	////////////////////////
-	//Code Refactoring//
+	// Code Refactoring//
 	///////////////////////
 
 	private RequestSpecBuilder specBuilder;
 	private Properties prop;
 	private String baseURI;
-	
+
 	public RestClient(Properties prop, String baseURI) {
 		specBuilder = new RequestSpecBuilder();
 		this.prop = prop;
 		this.baseURI = baseURI;
 	}
+
+	// crud public methods
+	public Response get(String serviceUrl, boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec()).log().all().when().get(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec()).when().get(serviceUrl);
+	}
+
+	public Response get(String serviceUrl, Map<String, String> headersMap, boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(headersMap)).log().all().when().get(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec(headersMap)).when().get(serviceUrl);
+
+	}
+
+	public Response get(String serviceUrl, Map<String, String> headersMap, Map<String, Object> queryParams,
+			boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(headersMap, queryParams)).log().all().when().get(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec(headersMap, queryParams)).when().get(serviceUrl);
+	}
+
+	public Response post(String serviceUrl, String contentType, Object payload, Boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(payload, contentType)).log().all().when().post(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec(payload, contentType)).when().post(serviceUrl);
+	}
+
+	public Response post(String serviceUrl, String contentType, Object payload, Map<String, String> headersMap,
+			boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when()
+					.post(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().post(serviceUrl);
+
+	}
+
+	public Response put(String serviceUrl, String contentType, Object payload, Boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(payload, contentType)).log().all().when().put(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec()).when().put(serviceUrl);
+	}
+
+	public Response put(String serviceUrl, String contentType, Object payload, Map<String, String> headersMap,
+			boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when()
+					.put(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().put(serviceUrl);
+
+	}
+
+	public Response patch(String serviceUrl, String contentType, Object payload, Boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(payload, contentType)).log().all().when().patch(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec()).when().patch(serviceUrl);
+	}
+
+	public Response patch(String serviceUrl, String contentType, Object payload, Map<String, String> headersMap,
+			boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when()
+					.patch(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().patch(serviceUrl);
+
+	}
+
+	public Response delete(String serviceUrl, boolean log) {
+		if (log) {
+			return RestAssured.given(createRequestSpec()).log().all().when().delete(serviceUrl);
+		}
+		return RestAssured.given(createRequestSpec()).when().delete(serviceUrl);
+
+	}
 	
-	public String getOAuth2AccessToken() {
-		String accessToken = 
-				RestAssured.given()
-					.contentType(ContentType.URLENC)
-					.formParam("grant_type", prop.getProperty("grantType"))
-					.formParam("client_id", prop.getProperty("clientId"))
-					.formParam("client_secret", prop.getProperty("clientSecret"))
-				.when()
-					.post(prop.getProperty("oAuthTokenURL"))
-				.then()
-					.assertThat()
-						.statusCode(200)
-						.extract().path("access_token");
-		System.out.println("OAuth 2.0 Access Token is : "+ accessToken);
-				
-		return accessToken;
-	}
-
-	public void addAuthorizationHeader() {
-		System.out.println("Authenthication Type is : "+prop.getProperty("authType"));
-		
-		if(prop.getProperty("authType").equals("OAuth2")) {
-			if(prop.getProperty("grantType")!= null && prop.getProperty("clientId")!= null && prop.getProperty("clientSecret")!= null && prop.getProperty("oAuthTokenURL")!= null) {
-				System.out.println("Constucting Autherization header with OAuth 2.0 Token...");
-				specBuilder.addHeader("Authorization", "Bearer "+ getOAuth2AccessToken());
-				return;
-			}
-			System.out.println("[Error]Please check Auth 2.0 properties...");
-			
-		}else if(prop.getProperty("authType").equals("Basic") && prop.getProperty("authToken")!= null) {
-			System.out.println("Constucting Autherization header with Basic Token...");
-			specBuilder.addHeader("Authorization", "Bearer "+ prop.getProperty("authToken"));
-			return;
-			
-		}else if(prop.getProperty("authType").equals("None")) {
-			return;
-			
-		}else {
-			System.out.println("Filed to add Autherizaion header. Please check property file.");
-		}
-	}
-
-	private void setRequestContentType(String contentType) {
-		switch (contentType.toLowerCase()) {
-		case "json":
-			specBuilder.setContentType(ContentType.JSON);
-			break;
-		case "xml":
-			specBuilder.setContentType(ContentType.XML);
-			break;
-		case "text":
-			specBuilder.setContentType(ContentType.TEXT);
-			break;
-		case "multipart":
-			specBuilder.setContentType(ContentType.MULTIPART);
-			break;
-
-		default:
-			System.out.println("Please provide correct content Type");
-			break;
-		}
-	}
-
-
-	RequestSpecification createRequestSpec() {
+	
+	//private supported methods
+	
+	private RequestSpecification createRequestSpec() {
 		specBuilder.setBaseUri(baseURI);
 		addAuthorizationHeader();
 		return specBuilder.build();
@@ -151,85 +175,90 @@ public class RestClient {
 		}
 		return specBuilder.build();
 	}
+	
+	private void setRequestContentType(String contentType) {
+		switch (contentType.toLowerCase()) {
+		case "json":
+			specBuilder.setContentType(ContentType.JSON);
+			break;
+		case "xml":
+			specBuilder.setContentType(ContentType.XML);
+			break;
+		case "text":
+			specBuilder.setContentType(ContentType.TEXT);
+			break;
+		case "multipart":
+			specBuilder.setContentType(ContentType.MULTIPART);
+			break;
 
-	// crud methods
-	public Response get(String serviceUrl, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec()).log().all().when().get(serviceUrl);
+		default:
+			System.out.println("Please provide correct content Type");
+			break;
 		}
-		return RestAssured.given(createRequestSpec()).when().get(serviceUrl);
 	}
 
-	public Response get(String serviceUrl, Map<String, String> headersMap, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec(headersMap)).log().all().when().get(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec(headersMap)).when().get(serviceUrl);
+	private void addAuthorizationHeader() {
+		System.out.println("Authenthication Type is : " + prop.getProperty("authType"));
 
+		if (prop.getProperty("authType").equals("OAuth2")) {
+			if (prop.getProperty("grantType") != null && prop.getProperty("clientId") != null
+					&& prop.getProperty("clientSecret") != null && prop.getProperty("oAuthTokenURL") != null) {
+				System.out.println("Constucting Autherization header with OAuth 2.0 Token...");
+				specBuilder.addHeader("Authorization", "Bearer " + getOAuth2AccessToken());
+				return;
+			}
+			System.out.println("[Error]Please check Auth 2.0 properties...");
+
+		} else if (prop.getProperty("authType").equals("Bearer") && prop.getProperty("authToken") != null) {
+			System.out.println("Constucting Autherization header with Bearer Token...");
+			specBuilder.addHeader("Authorization", "Bearer " + prop.getProperty("authToken"));
+			return;
+
+		} if (prop.getProperty("authType").equals("JWT")) {
+			if (prop.getProperty("username") != null && prop.getProperty("password") != null 
+					&& prop.getProperty("jwtTokenUrl") != null) {
+				System.out.println("Constucting Autherization header with JWT Token...");
+				specBuilder.addHeader("Authorization", "Bearer " + getJwtToken());
+				return;
+			}
+			System.out.println("[Error]Please check Auth 2.0 properties...");
+
+		} else if (prop.getProperty("authType").equals("None")) {
+			return;
+
+		} else {
+			System.out.println("Filed to add Autherizaion header. Please check property file.");
+		}
 	}
 	
-	public Response get(String serviceUrl, Map<String, String> headersMap, Map<String, Object> queryParams, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec(headersMap, queryParams)).log().all().when().get(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec(headersMap, queryParams)).when().get(serviceUrl);
+	private String getJwtToken() {
+		String jwtTokenString = RestAssured
+				.given()
+					.contentType(ContentType.JSON)
+					.body("TBU")
+				.when()
+					.post(prop.getProperty("jwtTokenUrl"))
+				.then()
+					.extract().path("token");
+		return jwtTokenString;
 	}
 
-	public Response post(String serviceUrl, String contentType,Object payload, Boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType)).log().all().when().post(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec(payload, contentType)).when().post(serviceUrl);
+	private String getOAuth2AccessToken() {
+		String accessToken = RestAssured.given()
+				.contentType(ContentType.URLENC)
+				.formParam("grant_type", prop.getProperty("grantType"))
+				.formParam("client_id", prop.getProperty("clientId"))
+				.formParam("client_secret", prop.getProperty("clientSecret")).when()
+				.post(prop.getProperty("oAuthTokenURL")).then().assertThat().statusCode(200).extract()
+				.path("access_token");
+		System.out.println("OAuth 2.0 Access Token is : " + accessToken);
+
+		return accessToken;
 	}
 
-	public Response post(String serviceUrl, String contentType,Object payload, Map<String, String> headersMap, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().post(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().post(serviceUrl);
-
-	}
-
-	public Response put(String serviceUrl, String contentType,Object payload, Boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec()).log().all().when().put(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec()).when().put(serviceUrl);
-	}
-
-	public Response put(String serviceUrl, String contentType,Object payload, Map<String, String> headersMap, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().put(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().put(serviceUrl);
-
-	}
-
-	public Response patch(String serviceUrl, String contentType,Object payload, Boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec()).log().all().when().patch(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec()).when().patch(serviceUrl);
-	}
-
-	public Response patch(String serviceUrl, String contentType,Object payload, Map<String, String> headersMap, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).log().all().when().patch(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec(payload, contentType, headersMap)).when().patch(serviceUrl);
-
-	}
-
-	public Response delete(String serviceUrl, boolean log) {
-		if (log) {
-			return RestAssured.given(createRequestSpec()).log().all().when().delete(serviceUrl);
-		}
-		return RestAssured.given(createRequestSpec()).when().delete(serviceUrl);
-
-	}
 
 	/////////////////////////////////////////////////////////////////////////////
-	//OLD Code//
+	// OLD Code//
 	////////////////////////////////////////////////////////////////////////////
 	private static String uploadFilePath;
 
@@ -356,5 +385,5 @@ public class RestClient {
 
 		return response;
 	}
-	
+
 }

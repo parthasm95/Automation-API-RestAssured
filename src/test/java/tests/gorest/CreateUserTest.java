@@ -13,12 +13,14 @@ import com.automazing.util.RandomUtil;
 import io.restassured.response.Response;
 import tests.base.BaseTest;
 
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 public class CreateUserTest extends BaseTest{
 
 	
 	@BeforeMethod
 	public void setUpProperties() {
-		setUp("src/test/resources/properties/gorest.properties");
+		setUp("gorest");
 	}
 	
 	
@@ -34,7 +36,10 @@ public class CreateUserTest extends BaseTest{
 		User user = new User("Ivaan", "ivaan"+RandomUtil.gerenateInt()+"@gmail.com", "male", "active");
 		Response response = restClient.post(Constants.GOREST_ENDPOINT, "json", user, true);
 		response.then().log().all()
-		.assertThat().statusCode(HttpStatus.CREATED_201.getCode());
+		.assertThat()
+			.statusCode(HttpStatus.CREATED_201.getCode())
+		.and()
+			.body(matchesJsonSchemaInClasspath("schemas/gorest/createuser_schema.json"));
 	}
 	
 	@Test (dataProvider = "getUserData")
@@ -43,7 +48,10 @@ public class CreateUserTest extends BaseTest{
 		User user = new User(name, randomEmail, gender, status);
 		Response response  = restClient.post(Constants.GOREST_ENDPOINT, "json", user, true);
 		response.then().log().all()
-		.assertThat().statusCode(HttpStatus.CREATED_201.getCode());
+		.assertThat()
+			.statusCode(HttpStatus.CREATED_201.getCode())
+		.and()
+			.body(matchesJsonSchemaInClasspath("schemas/gorest/createuser_schema.json"));
 	}
 	
 }

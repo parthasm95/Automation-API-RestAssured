@@ -12,12 +12,14 @@ import com.automazing.constants.HttpStatus;
 import io.restassured.response.Response;
 import tests.base.BaseTest;
 
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 
 public class GetUserTest extends BaseTest{
 	
 	@BeforeMethod
 	public void setUpProperties() {
-		setUp("src/test/resources/properties/gorest.properties");
+		setUp("gorest");
 	}
 	
 	
@@ -25,7 +27,10 @@ public class GetUserTest extends BaseTest{
 	public void getAllUserListAPITest() {
 		Response response = restClient.get(Constants.GOREST_ENDPOINT, true);
 		response.then().log().all()
-			.assertThat().statusCode(HttpStatus.OK_200.getCode());
+			.assertThat()
+				.statusCode(HttpStatus.OK_200.getCode())
+			.and()
+				.body(matchesJsonSchemaInClasspath("schemas/gorest/getuser_schema.json"));
 	}
 	
 	@Test(priority = 2)
@@ -35,7 +40,10 @@ public class GetUserTest extends BaseTest{
 		params.put("status", "active");
 		Response response = restClient.get(Constants.GOREST_ENDPOINT, null, params, true);
 		response.then().log().all()
-			.assertThat().statusCode(HttpStatus.OK_200.getCode());
+			.assertThat()
+				.statusCode(HttpStatus.OK_200.getCode())
+			.and()
+				.body(matchesJsonSchemaInClasspath("schemas/gorest/getuser_schema.json"));
 	}
 	
 }

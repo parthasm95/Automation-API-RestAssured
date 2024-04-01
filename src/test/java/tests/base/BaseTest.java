@@ -17,13 +17,13 @@ public class BaseTest {
 	private String baseURL;
 	private String basePath;
 	
-	public void setUp(String propFilePath) {
+	public void setUp(String appName) {
 		
 		RestAssured.filters(new AllureRestAssured());
 		
 		System.out.println("loading properties...");
 		propertiesUtil = new PropertiesUtil();
-		prop = propertiesUtil.loadProp(propFilePath);
+		prop = propertiesUtil.loadProp(appName);
 		
 		baseURL = prop.getProperty("baseURL");
 		basePath = prop.getProperty("basePath");

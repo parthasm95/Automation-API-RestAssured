@@ -17,7 +17,7 @@ public class GetFlightDetailsTest extends BaseTest {
 	
 	@BeforeMethod
 	public void setUpProperties(){
-		setUp("src/test/resources/properties/amadeus.properties");
+		setUp("amadeus");
 	}
 	
 	
