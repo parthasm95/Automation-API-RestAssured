@@ -20,6 +20,7 @@ private Properties prop;
 			System.out.println("No Env Passed, Running Tests on QA Env...");
 			propFilePath = "src/test/resources/properties/"+appName.toLowerCase()+"/qa/"+appName.toLowerCase()+".properties";
 		}else {
+			System.out.println("Running Test on "+envName+" Environment");
 			propFilePath = "src/test/resources/properties/"+appName.toLowerCase()+"/"+envName.toLowerCase()+"/"+appName.toLowerCase()+".properties";
 		}
 		
