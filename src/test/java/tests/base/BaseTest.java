@@ -30,6 +30,7 @@ public class BaseTest {
 		
 		String baseURI = baseURL + basePath;
 		restClient = new RestClient(prop, baseURI);
+		
 	}
 
 }
