@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Rest API Test Suite" verbose="1" parallel="tests"
+<suite name="Rest API Regression Test Suite" verbose="1" parallel="tests"
 	thread-count="3">
 
 	<listeners>
@@ -13,6 +13,10 @@
 		<classes>
 			<class name="tests.gorest.CreateUserTest" />
 			<class name="tests.gorest.GetUserTest" /> 
+			<class name="tests.gorest.E2ETest" />
+			<class name="tests.amadeus.GetFlightDetailsTest" />
+			<class name="tests.fakestore.GetProductsTest" />
+			<class name="tests.petstore.EntryNewPetTest" />
 			<!-- <class name="tests.imgur.GetImgurAPITest" /> -->
 			<!-- <class name="tests.imgur.PostImgurAPITest" /> -->
 		</classes>
